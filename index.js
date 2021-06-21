@@ -1,7 +1,3 @@
-const { Sequelize } = require('sequelize');
-
-const {Movie} = require('./Model')
-
 const express = require("express");
 const bodyParser = require("body-parser")
 

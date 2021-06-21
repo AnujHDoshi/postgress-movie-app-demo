@@ -1,7 +1,10 @@
 const lodash = require("lodash");
 const moment = require("moment");
+const { Op } = require('sequelize');
+
 const {Movie} = require('../Model')
-const addMovie = async(req,res)=>{
+
+const addMovie = async (req, res) => {
     const movieObject = req.body;
     
     if(!movieObject.title || !movieObject.year || !movieObject.length){
@@ -24,4 +27,45 @@ const addMovie = async(req,res)=>{
     return res.json({message:"Successfully added movies."});
 }
 
-module.exports = {addMovie};
+const listMovie = async (req,res) => {
+    const movie = await Movie.findAll();
+
+    return res.send(movie)
+}
+
+const searchTitle = async(req,res) => {
+    const {movieName} = req.params;
+
+    const searchResult = await Movie.findAll({
+        where: {
+            title: {
+                [Op.like] : `%${movieName}%`
+            }
+        }
+    })
+
+    return res.send(searchResult)
+}
+const updateMovie = async (req, res) => {
+    const { movieName } = req.params;
+    const { year } = req.body;
+    const updateResult = await Movie.update({ year: year}, {
+        where: {
+            title:`${movieName}`
+        }
+    });
+    return res.json({"message":"Movie updated succesfully."})
+    
+}
+
+const deleteMovie = async (req, res) => {
+    const { movieName } = req.params;
+    const deleteResult = await Movie.destroy({
+        where: {
+            title: movieName
+        }
+    });
+    return res.json({"message":"Movie deleted succesfully."})
+    
+}
+module.exports = {addMovie,listMovie,searchTitle,updateMovie,deleteMovie};
